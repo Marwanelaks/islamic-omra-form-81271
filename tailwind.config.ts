@@ -74,6 +74,7 @@ export default {
       fontFamily: {
         amiri: ['Amiri', 'serif'],
         inter: ['Inter', 'sans-serif'],
+        poppins: ['Poppins', 'sans-serif'],
         playfair: ['Playfair Display', 'serif'],
       },
       borderRadius: {

@@ -243,17 +243,18 @@ export const Step2AccommodationDetails: React.FC = () => {
 
   return (
     <div className={`space-y-8 ${isRTL ? 'rtl text-right' : 'ltr text-left'}`}>
-      <div className="text-center mb-8">
-        <div className="w-16 h-16 bg-gradient-islamic rounded-full flex items-center justify-center mx-auto mb-6 shadow-lg shadow-islamic-green/20">
-          <Hotel className="w-8 h-8 text-white drop-shadow-sm" />
+      <div className="text-center mb-10">
+        <div className="relative w-20 h-20 bg-gradient-to-br from-islamic-green via-islamic-green-light to-islamic-gold rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-2xl shadow-islamic-green/30 animate-in slide-in-from-top-10 duration-700">
+          <Hotel className="w-10 h-10 text-white drop-shadow-lg" />
+          <div className="absolute inset-0 rounded-3xl bg-gradient-to-br from-white/20 to-transparent"></div>
         </div>
-        <h3 className={`text-2xl font-bold text-islamic-green mb-2 ${
-          isRTL ? 'font-amiri' : 'font-playfair'
+        <h3 className={`text-3xl sm:text-4xl font-bold bg-gradient-to-r from-islamic-green to-islamic-green-light bg-clip-text text-transparent mb-3 ${
+          isRTL ? 'font-amiri' : 'font-poppins'
         }`}>
           {isRTL ? 'تفاصيل الإقامة' : 'Accommodation Details'}
         </h3>
-        <p className={`text-muted-foreground ${isRTL ? 'font-amiri' : 'font-inter'}`}>
-          {isRTL ? 'يرجى تحديد تفضيلات الإقامة' : 'Please specify your accommodation preferences'}
+        <p className={`text-base sm:text-lg text-muted-foreground max-w-2xl mx-auto ${isRTL ? 'font-amiri' : 'font-poppins'}`}>
+          {isRTL ? 'يرجى تحديد تفضيلات الإقامة والغرف المناسبة لرحلتك' : 'Please specify your accommodation and room preferences for your journey'}
         </p>
       </div>
 
@@ -281,7 +282,7 @@ export const Step2AccommodationDetails: React.FC = () => {
             </span>
           </Label>
           
-          <div className={`flex flex-wrap gap-4 ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 ${isRTL ? 'rtl' : 'ltr'}`}>
             {hotelCategories.map((category) => {
               const currentCategories = Array.isArray(formData.hotelCategories) ? formData.hotelCategories : [];
               const isSelected = currentCategories.includes(category.value);
@@ -289,33 +290,33 @@ export const Step2AccommodationDetails: React.FC = () => {
               return (
                 <div
                   key={category.value}
-                  className={`flex-1 min-w-[200px] group relative overflow-hidden rounded-xl border-2 transition-all duration-300 cursor-pointer ${
+                  className={`group relative overflow-hidden rounded-2xl border-2 transition-all duration-300 cursor-pointer ${
                     isSelected
-                      ? 'border-islamic-green bg-islamic-green/10 shadow-lg shadow-islamic-green/20 scale-105'
-                      : 'border-muted-foreground/20 bg-card hover:border-islamic-green/50 hover:shadow-md'
+                      ? 'border-islamic-green bg-gradient-to-br from-islamic-green/10 to-islamic-green/20 shadow-xl shadow-islamic-green/20 scale-[1.02]'
+                      : 'border-muted-foreground/20 bg-card hover:border-islamic-green/50 hover:shadow-lg'
                   }`}
                   onClick={() => handleHotelCategoryChange(category.value)}
                 >
-                  <div className="p-5">
-                    <div className="flex flex-col items-center text-center space-y-3">
-                      <div className={`w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
-                        isSelected ? 'bg-islamic-green' : 'bg-muted'
+                  <div className="p-6">
+                    <div className="flex flex-col items-center text-center space-y-4">
+                      <div className={`w-16 h-16 rounded-2xl flex items-center justify-center transition-all duration-300 shadow-lg ${
+                        isSelected ? 'bg-gradient-to-br from-islamic-green to-islamic-green-light' : 'bg-gradient-to-br from-muted to-muted-dark'
                       }`}>
-                        <Hotel className={`w-6 h-6 ${
+                        <Hotel className={`w-8 h-8 ${
                           isSelected ? 'text-white' : 'text-muted-foreground'
                         }`} />
                       </div>
-                      <div className="space-y-1">
+                      <div className="space-y-2">
                         <Label
                           htmlFor={category.value}
-                          className={`cursor-pointer font-bold text-base transition-colors block ${
+                          className={`cursor-pointer font-bold text-lg transition-colors block ${
                             isSelected ? 'text-islamic-green-dark' : 'text-foreground'
-                          } ${isRTL ? 'font-amiri' : 'font-inter'}`}
+                          } ${isRTL ? 'font-amiri' : 'font-poppins'}`}
                         >
                           {isRTL ? category.labelAr : category.labelEn}
                         </Label>
-                        <p className={`text-xs text-muted-foreground ${
-                          isRTL ? 'font-amiri' : 'font-inter'
+                        <p className={`text-xs sm:text-sm text-muted-foreground ${
+                          isRTL ? 'font-amiri' : 'font-poppins'
                         }`}>
                           {isRTL ? category.descriptionAr : category.descriptionEn}
                         </p>
@@ -324,13 +325,13 @@ export const Step2AccommodationDetails: React.FC = () => {
                         id={category.value}
                         checked={isSelected}
                         onCheckedChange={() => handleHotelCategoryChange(category.value)}
-                        className="data-[state=checked]:bg-islamic-green data-[state=checked]:border-islamic-green"
+                        className="data-[state=checked]:bg-islamic-green data-[state=checked]:border-islamic-green w-5 h-5"
                       />
                     </div>
                   </div>
 
                   {isSelected && (
-                    <div className="absolute inset-0 -z-10 bg-gradient-to-br from-islamic-green/5 via-islamic-green/10 to-islamic-green/5" />
+                    <div className="absolute inset-0 -z-10 bg-gradient-to-br from-islamic-green/10 via-islamic-gold/5 to-islamic-green/10 animate-pulse" />
                   )}
                 </div>
               );
@@ -344,64 +345,66 @@ export const Step2AccommodationDetails: React.FC = () => {
           )}
         </div>
 
-        {/* Number of Rooms */}
+        {/* Number of Rooms - Fully Responsive */}
         <div className="space-y-4">
           <Label className={`flex items-center space-x-2 ${isRTL ? 'flex-row-reverse space-x-reverse' : ''}`}>
             <Bed className="w-4 h-4 text-islamic-green" />
-            <span className={isRTL ? 'font-amiri' : 'font-inter'}>
+            <span className={isRTL ? 'font-amiri' : 'font-poppins'}>
               {isRTL ? 'عدد الغرف' : 'Number of Rooms'} *
             </span>
           </Label>
           
-          <div className="group relative overflow-hidden rounded-lg border-2 border-islamic-green/20 bg-card hover:border-islamic-green/50 transition-all duration-300">
-            <div className="p-6">
-              <div className={`flex items-center justify-between ${isRTL ? 'flex-row-reverse' : ''}`}>
+          <div className="group relative overflow-hidden rounded-xl border-2 border-islamic-green/20 bg-gradient-to-br from-card to-islamic-green/5 hover:border-islamic-green/50 transition-all duration-300 shadow-md hover:shadow-xl">
+            <div className="p-4 sm:p-6">
+              <div className={`flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 ${isRTL ? 'sm:flex-row-reverse' : ''}`}>
                 <div className={`flex items-center space-x-3 ${isRTL ? 'flex-row-reverse space-x-reverse' : ''}`}>
-                  <div className="w-10 h-10 bg-islamic-green/10 rounded-full flex items-center justify-center">
-                    <Bed className="w-5 h-5 text-islamic-green" />
+                  <div className="w-12 h-12 bg-gradient-to-br from-islamic-green to-islamic-green-light rounded-full flex items-center justify-center shadow-lg">
+                    <Bed className="w-6 h-6 text-white" />
                   </div>
                   <div>
-                    <Label className={`font-medium text-foreground ${isRTL ? 'font-amiri' : 'font-inter'}`}>
+                    <Label className={`font-semibold text-base text-foreground ${isRTL ? 'font-amiri' : 'font-poppins'}`}>
                       {isRTL ? 'الغرف المطلوبة' : 'Rooms Required'}
                     </Label>
-                    <p className={`text-sm text-muted-foreground ${isRTL ? 'font-amiri' : 'font-inter'}`}>
+                    <p className={`text-xs sm:text-sm text-muted-foreground ${isRTL ? 'font-amiri' : 'font-poppins'}`}>
                       {isRTL ? 'اختر عدد الغرف المناسب' : 'Select the number of rooms needed'}
                     </p>
                   </div>
                 </div>
                 
                 <div 
-                  className={`flex items-center space-x-4 animate-in slide-in-from-right-5 duration-300 ${
+                  className={`flex items-center space-x-3 sm:space-x-4 w-full sm:w-auto justify-between sm:justify-end ${
                     isRTL ? 'flex-row-reverse space-x-reverse' : ''
                   }`}
                 >
-                  <Label className={`text-sm text-muted-foreground whitespace-nowrap ${isRTL ? 'font-amiri' : 'font-inter'}`}>
+                  <Label className={`text-sm text-muted-foreground whitespace-nowrap ${isRTL ? 'font-amiri' : 'font-poppins'}`}>
                     {isRTL ? 'العدد:' : 'Quantity:'}
                   </Label>
-                  <div className="flex items-center space-x-2">
+                  <div className={`flex items-center space-x-2 sm:space-x-3 ${isRTL ? 'space-x-reverse' : ''}`}>
                     <button
                       type="button"
                       onClick={() => handleRoomCountChange((formData.numberOfRooms || 1) - 1)}
-                      className="w-10 h-10 rounded-md bg-islamic-green/10 hover:bg-islamic-green/20 text-islamic-green flex items-center justify-center transition-colors font-bold disabled:opacity-50 disabled:cursor-not-allowed"
                       disabled={(formData.numberOfRooms || 1) <= 1}
+                      className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-islamic-green/30 hover:border-islamic-green text-islamic-green hover:bg-islamic-green hover:text-white transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 shadow-md hover:shadow-lg"
                     >
-                      -
+                      <FaMinus className="w-3 h-3 sm:w-4 sm:h-4" />
                     </button>
-                    <Input
-                      type="number"
-                      min="1"
-                      max="20"
-                      value={formData.numberOfRooms || 1}
-                      onChange={(e) => handleRoomCountChange(parseInt(e.target.value) || 1)}
-                      className="w-20 h-10 text-center font-semibold border-islamic-green/30 text-lg"
-                    />
+                    <div className="relative">
+                      <Input
+                        type="number"
+                        min={1}
+                        max={20}
+                        value={formData.numberOfRooms || 1}
+                        onChange={(e) => handleRoomCountChange(parseInt(e.target.value) || 1)}
+                        className="w-16 sm:w-20 text-center text-xl sm:text-2xl font-bold text-islamic-green border-2 border-islamic-green/30 focus:border-islamic-green rounded-xl shadow-inner bg-white/80"
+                      />
+                    </div>
                     <button
                       type="button"
                       onClick={() => handleRoomCountChange((formData.numberOfRooms || 1) + 1)}
-                      className="w-10 h-10 rounded-md bg-islamic-green/10 hover:bg-islamic-green/20 text-islamic-green flex items-center justify-center transition-colors font-bold disabled:opacity-50 disabled:cursor-not-allowed"
                       disabled={(formData.numberOfRooms || 1) >= 20}
+                      className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full border-2 border-islamic-green/30 hover:border-islamic-green text-islamic-green hover:bg-islamic-green hover:text-white transition-all duration-300 disabled:opacity-30 disabled:cursor-not-allowed active:scale-95 shadow-md hover:shadow-lg"
                     >
-                      +
+                      <FaPlus className="w-3 h-3 sm:w-4 sm:h-4" />
                     </button>
                   </div>
                 </div>

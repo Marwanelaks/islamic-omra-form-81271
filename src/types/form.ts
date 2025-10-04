@@ -3,6 +3,7 @@ export interface FormData {
   fullName: string;
   email: string;
   phone: string;
+  phoneCountry?: string;
   detectedCountry?: string;
 
   // Accommodation Details (Step 2)

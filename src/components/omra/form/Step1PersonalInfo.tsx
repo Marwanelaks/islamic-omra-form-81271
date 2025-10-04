@@ -219,7 +219,7 @@ export const Step1PersonalInfo: React.FC = () => {
       </div>
 
       {/* Add CSS for floating label behavior */}
-      <style jsx global>{`
+      <style>{`
         /* Floating label styles for all inputs */
         .form-input-floating {
           position: relative;

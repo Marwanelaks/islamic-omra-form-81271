@@ -51,8 +51,8 @@ export const Step4Review: React.FC<Step4ReviewProps> = ({ onSubmit }) => {
   };
 
   // Get travel party data
-  const travelParty = formData.travelParty || { adults: 1, children: 0, infants: 0, ages: [] };
-  const totalGuests = travelParty.adults + travelParty.children + travelParty.infants;
+  const travelParty = formData.travelParty || { adults: 1, children: 0, ages: [] };
+  const totalGuests = travelParty.adults + travelParty.children;
 
   return (
     <div className={`space-y-8 ${isRTL ? 'rtl text-right' : 'ltr text-left'}`}>
@@ -101,7 +101,7 @@ export const Step4Review: React.FC<Step4ReviewProps> = ({ onSubmit }) => {
             </h4>
           </div>
           <div className="space-y-4 text-sm">
-            <div className="grid md:grid-cols-3 gap-4">
+            <div className="grid md:grid-cols-2 gap-4">
               <div className="bg-blue-50 rounded-lg p-3 border border-blue-200">
                 <span className="font-medium block text-blue-700">
                   {isRTL ? 'بالغين' : 'Adults'}
@@ -118,21 +118,13 @@ export const Step4Review: React.FC<Step4ReviewProps> = ({ onSubmit }) => {
                   {travelParty.children}
                 </span>
               </div>
-              <div className="bg-pink-50 rounded-lg p-3 border border-pink-200">
-                <span className="font-medium block text-pink-700">
-                  {isRTL ? 'رضع' : 'Infants'}
-                </span>
-                <span className="text-lg font-bold text-pink-800">
-                  {travelParty.infants}
-                </span>
-              </div>
             </div>
             
             {/* Display ages if available */}
-            {(travelParty.children > 0 || travelParty.infants > 0) && travelParty.ages && travelParty.ages.length > 0 && (
+            {travelParty.children > 0 && travelParty.ages && travelParty.ages.length > 0 && (
               <div className="mt-4">
                 <span className="font-medium block mb-2">
-                  {isRTL ? 'أعمار الأطفال والرضع:' : 'Children and Infants Ages:'}
+                  {isRTL ? 'أعمار الأطفال:' : 'Children Ages:'}
                 </span>
                 <div className="flex flex-wrap gap-2">
                   {travelParty.ages.map((age, index) => (
