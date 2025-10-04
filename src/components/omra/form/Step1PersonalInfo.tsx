@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { useLanguage } from '@/contexts/LanguageContext';
 import { useForm } from '@/contexts/FormContext';
-import PhoneInput from 'react-phone-number-input';
-import 'react-phone-number-input/style.css';
+import PhoneInput from 'react-phone-input-2';
+import 'react-phone-input-2/lib/style.css';
 
 // Common email domains for autocomplete
 const COMMON_EMAIL_DOMAINS = ['gmail.com', 'yahoo.com', 'hotmail.com', 'outlook.com', 'icloud.com', 'aol.com'];
@@ -11,9 +11,9 @@ export const Step1PersonalInfo: React.FC = () => {
   const { t, isRTL } = useLanguage();
   const { formData, updateFormData, errors } = useForm();
   
-  const [emailSuggestion, setEmailSuggestion] = useState('');
   const [showSuggestion, setShowSuggestion] = useState(false);
   const [suggestionText, setSuggestionText] = useState('');
+  const [detectedCountry, setDetectedCountry] = useState('sa');
   
   const emailInputRef = useRef<HTMLInputElement>(null);
   const suggestionRef = useRef<HTMLDivElement>(null);
@@ -23,12 +23,11 @@ export const Step1PersonalInfo: React.FC = () => {
       try {
         const response = await fetch('https://ipapi.co/json/');
         const data = await response.json();
-        const countryCode = data.country_code;
+        const countryCode = data.country_code?.toLowerCase();
         
-        // Update form data with detected country
-        updateFormData({ 
-          detectedCountry: countryCode 
-        });
+        if (countryCode) {
+          setDetectedCountry(countryCode);
+        }
       } catch (error) {
         console.error('Error detecting country:', error);
       }
@@ -85,21 +84,12 @@ export const Step1PersonalInfo: React.FC = () => {
     }
   };
 
-  const handlePhoneChange = (value: string = '') => {
-    updateFormData({ phone: value });
+  const handlePhoneChange = (value: string, country: any) => {
+    updateFormData({ 
+      phone: value,
+      phoneCountry: country.countryCode
+    });
   };
-
-  // Custom styles for phone input to match your design
-  const phoneInputStyle = {
-    '--PhoneInputColor--focus': '#16a34a',
-    '--PhoneInputInternationalIconPhone-opacity': '0.8',
-    '--PhoneInputInternationalIconGlobe-opacity': '0.8',
-    '--PhoneInputCountrySelectArrow-opacity': '0.8',
-    '--PhoneInputCountrySelectArrow-color': '#16a34a',
-    '--PhoneInputCountryFlag-borderColor': '#e5e7eb',
-    '--PhoneInputCountryFlag-height': '24px',
-    '--PhoneInputCountryFlag-width': '24px',
-  } as React.CSSProperties;
 
   return (
     <div className={`space-y-8 ${isRTL ? 'rtl text-right' : 'ltr text-left'}`}>
@@ -122,7 +112,7 @@ export const Step1PersonalInfo: React.FC = () => {
             id="fullName"
             value={formData.fullName}
             onChange={(e) => handleInputChange('fullName', e.target.value)}
-            placeholder={t('form.fullname')}
+            placeholder=" "
           />
           <label htmlFor="fullName">
             {t('form.fullname')} *
@@ -132,37 +122,35 @@ export const Step1PersonalInfo: React.FC = () => {
           )}
         </div>
 
-        {/* Email with Inline Autocomplete */}
+        {/* Email with Inline Autocomplete - FIXED to match fullName input */}
         <div className="form-input-floating relative">
-          <div className="relative">
-            <input
-              ref={emailInputRef}
-              type="email"
-              id="email"
-              value={formData.email}
-              onChange={(e) => handleEmailChange(e.target.value)}
-              onKeyDown={handleEmailKeyDown}
-              onBlur={() => setTimeout(() => setShowSuggestion(false), 200)}
-              placeholder={t('form.email')}
-              className="bg-transparent relative z-10 w-full"
-            />
-            {showSuggestion && (
-              <div
-                ref={suggestionRef}
-                className="absolute top-0 left-0 w-full h-full text-gray-400 pointer-events-none z-0"
-                style={{ 
-                  background: 'transparent',
-                  border: 'none',
-                  outline: 'none'
-                }}
-              >
-                <span className="invisible">{formData.email}</span>
-                <span className="text-gray-400 absolute top-0 left-0">
-                  {suggestionText.slice(formData.email.length)}
-                </span>
-              </div>
-            )}
-          </div>
+          <input
+            ref={emailInputRef}
+            type="email"
+            id="email"
+            value={formData.email}
+            onChange={(e) => handleEmailChange(e.target.value)}
+            onKeyDown={handleEmailKeyDown}
+            onBlur={() => setTimeout(() => setShowSuggestion(false), 200)}
+            placeholder=" "
+            className="relative z-10"
+          />
+          {showSuggestion && (
+            <div
+              ref={suggestionRef}
+              className="absolute top-0 left-0 w-full h-full text-gray-400 pointer-events-none z-0"
+              style={{ 
+                background: 'transparent',
+                border: 'none',
+                outline: 'none'
+              }}
+            >
+              <span className="invisible">{formData.email}</span>
+              <span className="text-gray-400 absolute top-0 left-0">
+                {suggestionText.slice(formData.email.length)}
+              </span>
+            </div>
+          )}
           <label htmlFor="email">
             {t('form.email')} *
           </label>
@@ -172,25 +160,34 @@ export const Step1PersonalInfo: React.FC = () => {
           )}
         </div>
 
-        {/* Phone with react-phone-number-input */}
-        <div className="form-input-floating">
-          <div className="phone-input-container">
+        {/* Phone Input - Custom Styled with Underline */}
+        <div className="form-input-floating-phone">
+          <div className="phone-input-wrapper">
             <PhoneInput
-              international
-              countryCallingCodeEditable={false}
-              defaultCountry={formData.detectedCountry as any || 'SA'}
+              country={detectedCountry}
               value={formData.phone}
               onChange={handlePhoneChange}
-              placeholder={t('form.phone')}
-              style={phoneInputStyle}
-              className="!w-full"
-              inputClassName="!w-full !border-none !outline-none !bg-transparent !py-4 !px-0 !h-auto"
-              countrySelectProps={{
-                className: '!border-none !bg-transparent'
+              inputProps={{
+                id: 'phone',
+                required: true,
+                name: 'phone',
+                className: 'custom-phone-input'
               }}
+              containerClass="custom-phone-container"
+              buttonClass="custom-phone-button"
+              inputClass="custom-phone-input"
+              dropdownClass="custom-phone-dropdown"
+              searchClass="custom-phone-search"
+              preferredCountries={['sa', 'ae', 'eg', 'ma', 'tn', 'dz', 'us', 'gb', 'fr', 'de']}
+              enableSearch
+              searchPlaceholder={isRTL ? 'ابحث عن الدولة...' : 'Search countries...'}
+              countryCodeEditable={false}
+              autoFormat={true}
+              placeholder={isRTL ? 'ادخل رقم الهاتف' : 'Enter phone number'}
+              specialLabel=""
             />
           </div>
-          <label htmlFor="phone" style={{ left: '60px' }}>
+          <label htmlFor="phone" className="phone-floating-label">
             {t('form.phone')} *
           </label>
           {errors.phone && (
@@ -221,75 +218,199 @@ export const Step1PersonalInfo: React.FC = () => {
         </div>
       </div>
 
-      <style jsx>{`
-        .phone-input-container :global(.PhoneInput) {
-          display: flex;
-          align-items: center;
+      {/* Add CSS for floating label behavior */}
+      <style jsx global>{`
+        /* Floating label styles for all inputs */
+        .form-input-floating {
+          position: relative;
+          width: 100%;
+          margin-bottom: 1rem;
+        }
+
+        .form-input-floating input {
           width: 100%;
           height: 56px;
-          padding: 0 16px;
-        }
-
-        .phone-input-container :global(.PhoneInputInput) {
-          flex: 1;
-          border: none;
-          outline: none;
-          background: transparent;
+          padding: 16px;
           font-size: 16px;
           line-height: 24px;
-          padding: 0;
-          margin-left: 8px;
+          border: none;
+          border-bottom: 1px solid #d1d5db;
+          border-radius: 0;
+          background: transparent;
+          transition: all 0.2s ease;
+          outline: none;
         }
 
-        .phone-input-container :global(.PhoneInputCountry) {
-          display: flex;
-          align-items: center;
-          margin-right: 8px;
+        .form-input-floating input:focus {
+          border-bottom-color: #16a34a;
         }
 
-        .phone-input-container :global(.PhoneInputCountrySelect) {
+        .form-input-floating label {
           position: absolute;
-          top: 0;
-          left: 0;
-          height: 100%;
-          width: 100%;
-          opacity: 0;
-          cursor: pointer;
+          top: 16px;
+          left: 16px;
+          font-size: 16px;
+          color: #6b7280;
+          pointer-events: none;
+          transition: all 0.2s ease;
+          background: white;
+          padding: 0 4px;
         }
 
-        .phone-input-container :global(.PhoneInputCountryIcon) {
-          width: 24px;
-          height: 24px;
-          border-radius: 2px;
-        }
-
-        .phone-input-container :global(.PhoneInputCountrySelectArrow) {
-          margin-left: 4px;
+        /* Floating label effect - same as fullName input */
+        .form-input-floating input:focus + label,
+        .form-input-floating input:not(:placeholder-shown) + label {
+          top: -8px;
+          font-size: 12px;
           color: #16a34a;
         }
 
+        /* RTL support for floating labels */
+        .rtl .form-input-floating label {
+          left: auto;
+          right: 16px;
+        }
+
+        /* Email input specific styles for autocomplete */
+        .form-input-floating .relative {
+          position: relative;
+        }
+
+        /* Main container */
+        .custom-phone-container {
+          width: 100% !important;
+          font-family: inherit !important;
+        }
+
+        /* Input field - Underlined style */
+        .custom-phone-input {
+          width: 100% !important;
+          height: 56px !important;
+          padding: 16px 16px 16px 60px !important;
+          font-size: 16px !important;
+          line-height: 24px !important;
+          border: none !important;
+          border-bottom: 1px solid #d1d5db !important;
+          border-radius: 0 !important;
+          background: transparent !important;
+          transition: all 0.2s ease !important;
+          font-family: inherit !important;
+        }
+
+        /* Focus state */
+        .custom-phone-input:focus {
+          border-bottom-color: #16a34a !important;
+          box-shadow: none !important;
+          outline: none !important;
+        }
+
+        /* Country dropdown button */
+        .custom-phone-button {
+          position: absolute !important;
+          top: 0 !important;
+          left: 0 !important;
+          bottom: 0 !important;
+          background: transparent !important;
+          border: none !important;
+          border-bottom: 1px solid #d1d5db !important;
+          border-radius: 0 !important;
+          padding: 0 12px !important;
+          width: 52px !important;
+          height: 100% !important;
+        }
+
+        .custom-phone-button.open {
+          background: white !important;
+          border-bottom: 1px solid #16a34a !important;
+        }
+
+        .custom-phone-button:hover {
+          background-color: #f8fafc !important;
+        }
+
+        /* Country dropdown menu */
+        .custom-phone-dropdown {
+          border: 1px solid #e5e7eb !important;
+          border-radius: 8px !important;
+          box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1) !important;
+          margin-top: 4px !important;
+          max-height: 300px !important;
+          overflow-y: auto !important;
+          background: white !important;
+        }
+
+        /* Search box */
+        .custom-phone-search {
+          padding: 12px !important;
+          border-bottom: 1px solid #e5e7eb !important;
+          margin: 0 !important;
+          border-radius: 8px 8px 0 0 !important;
+        }
+
+        .custom-phone-search input {
+          width: 100% !important;
+          padding: 8px 12px !important;
+          border: 1px solid #d1d5db !important;
+          border-radius: 6px !important;
+          outline: none !important;
+          transition: all 0.2s ease !important;
+          font-size: 14px !important;
+        }
+
+        .custom-phone-search input:focus {
+          border-color: #16a34a !important;
+          box-shadow: 0 0 0 3px rgb(22 163 74 / 0.1) !important;
+        }
+
+        /* Dial code arrow */
+        .custom-phone-button .arrow {
+          border-top-color: #6b7280 !important;
+          margin-left: 4px !important;
+        }
+
+        .custom-phone-button.open .arrow {
+          border-bottom-color: #16a34a !important;
+        }
+
         /* RTL Support */
-        ${isRTL ? `
-          .phone-input-container :global(.PhoneInput) {
-            direction: rtl;
-          }
-          
-          .phone-input-container :global(.PhoneInputInput) {
-            margin-left: 0;
-            margin-right: 8px;
-            text-align: right;
-          }
-          
-          .phone-input-container :global(.PhoneInputCountry) {
-            margin-right: 0;
-            margin-left: 8px;
-          }
-          
-          .phone-input-container :global(.PhoneInputCountrySelectArrow) {
-            margin-left: 0;
-            margin-right: 4px;
-          }
-        ` : ''}
+        .rtl .custom-phone-input {
+          padding: 16px 60px 16px 16px !important;
+          text-align: right;
+        }
+
+        .rtl .custom-phone-button {
+          left: auto !important;
+          right: 0 !important;
+        }
+
+        .rtl .custom-phone-button .arrow {
+          margin-left: 0 !important;
+          margin-right: 4px !important;
+        }
+
+        /* Floating label styles for phone */
+        .form-input-floating-phone {
+          position: relative;
+          width: 100%;
+        }
+
+        .phone-floating-label {
+          position: absolute;
+          top: -8px;
+          left: 12px;
+          background: white;
+          padding: 0 4px;
+          font-size: 12px;
+          color: #16a34a;
+          z-index: 10;
+          transition: all 0.2s ease;
+          pointer-events: none;
+        }
+
+        .rtl .phone-floating-label {
+          left: auto;
+          right: 12px;
+        }
       `}</style>
     </div>
   );
